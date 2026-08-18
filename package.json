@@ -1,5 +1,5 @@
 {
-  "name": "md-viewer",
+  "name": "@bluemeat0724/md-viewer",
   "version": "0.1.0",
   "description": "Scan a directory of Markdown files and build a self-contained, offline md-viewer.html",
   "type": "module",

@@ -17,7 +17,11 @@
 
 ## 安装
 
-包尚未发布到 npm registry，请在项目目录本地挂载：
+```bash
+npm install -g @bluemeat0724/md-viewer
+```
+
+或在项目目录本地挂载（开发调试用）：
 
 ```bash
 npm install
