@@ -48,6 +48,7 @@ md-viewer --watch      # 常驻监听，md 变动自动重建
 md-viewer docs         # 指定扫描目录（位置参数）
 md-viewer --out x.html # 自定义输出文件
 md-viewer --title "我的文档"  # 自定义站点标题
+md-viewer --harness   # 生成文档到.agent 目录下并开启watch
 ```
 
 打开生成的 HTML：使用 `--open`，或双击文件，或 `open md-viewer.html`。md 有变动时重新运行命令（或保持 `--watch` 常驻），刷新浏览器即可。
@@ -59,6 +60,7 @@ md-viewer --title "我的文档"  # 自定义站点标题
 | `[目录]` | 扫描根目录，默认当前执行目录 |
 | `-w, --watch` | 构建后持续监听，md 变动自动重建 |
 | `-o, --open` | 构建后用系统默认浏览器打开生成的 HTML |
+| `--harness` | 输出到 `<目录>/.agent/md-viewer.html` 并强制开启 watch（供 Agent 环境常驻） |
 | `--out <file>` | 输出文件路径，默认 `<目录>/md-viewer.html` |
 | `--title <text>` | 站点标题，默认为扫描目录名 |
 | `-h, --help` | 显示帮助 |
@@ -75,7 +77,7 @@ md-viewer --title "我的文档"  # 自定义站点标题
 
 ## 注意事项
 
-- `--watch` 基于 `fs.watch(recursive)`。macOS / Windows / 较新 Linux 内核均支持；部分旧 Linux 发行版（< 5.x 内核）对递归监听支持有限，如不生效可退回「改动后手动重跑 `md-viewer`」。
+- `--watch` 基于 `fs.watch(recursive)`，是 OS 级事件监听（macOS 走 FSEvents，非轮询）：空闲时近零 CPU，仅 md 变动时触发重建；事件带 300ms 防抖与重建串行锁，连续保存不会连环重建。macOS / Windows / 较新 Linux 内核均支持；部分旧 Linux 发行版（< 5.x 内核）对递归监听支持有限，如不生效可退回「改动后手动重跑 `md-viewer`」。
 - 生成的 HTML 内嵌 marked / highlight.js / mermaid 浏览器 bundle（约 3–4 MB），文档越多文件越大。
 - 构建失败时退出码为 1，并输出可读错误信息。
 

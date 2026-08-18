@@ -1,4 +1,6 @@
-node_modules/
+node_modules
+PUBLISH.md
+.pkg-test
 
 # 构建与测试产物
 dist/
