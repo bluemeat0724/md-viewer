@@ -1,5 +1,7 @@
 # md-viewer
 
+[![npm version](https://img.shields.io/npm/v/%40bluemeat0724%2Fmd-viewer)](https://www.npmjs.com/package/@bluemeat0724/md-viewer)
+
 扫描目录下所有 Markdown 文件，构建一个**自包含、离线可用**的 `md-viewer.html`——`file://` 双击直开，无需任何服务。
 
 ## 特性
@@ -21,7 +23,13 @@
 npm install -g @bluemeat0724/md-viewer
 ```
 
-或在项目目录本地挂载（开发调试用）：
+或免安装直接运行（npx）：
+
+```bash
+npx @bluemeat0724/md-viewer
+```
+
+开发调试时也可在项目目录本地挂载：
 
 ```bash
 npm install
@@ -35,13 +43,14 @@ npm link
 ```bash
 cd /path/to/any/docs-dir
 md-viewer              # 扫描当前目录，生成 ./md-viewer.html
+md-viewer --open       # 构建后自动用浏览器打开
 md-viewer --watch      # 常驻监听，md 变动自动重建
 md-viewer docs         # 指定扫描目录（位置参数）
 md-viewer --out x.html # 自定义输出文件
 md-viewer --title "我的文档"  # 自定义站点标题
 ```
 
-打开生成的 HTML：双击文件，或 `open md-viewer.html`。md 有变动时重新运行命令（或保持 `--watch` 常驻），刷新浏览器即可。
+打开生成的 HTML：使用 `--open`，或双击文件，或 `open md-viewer.html`。md 有变动时重新运行命令（或保持 `--watch` 常驻），刷新浏览器即可。
 
 ## 参数
 
@@ -49,6 +58,7 @@ md-viewer --title "我的文档"  # 自定义站点标题
 |---|---|
 | `[目录]` | 扫描根目录，默认当前执行目录 |
 | `-w, --watch` | 构建后持续监听，md 变动自动重建 |
+| `-o, --open` | 构建后用系统默认浏览器打开生成的 HTML |
 | `--out <file>` | 输出文件路径，默认 `<目录>/md-viewer.html` |
 | `--title <text>` | 站点标题，默认为扫描目录名 |
 | `-h, --help` | 显示帮助 |

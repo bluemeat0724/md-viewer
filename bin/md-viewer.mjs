@@ -4,6 +4,7 @@
  * 薄入口：解析参数 → 调 lib/build.mjs。
  */
 import path from 'node:path';
+import { spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { build, startWatch } from '../lib/build.mjs';
 
@@ -20,6 +21,7 @@ const HELP = `md-viewer v${pkg.version} — 扫描目录下所有 *.md，构建�
 
 选项：
   -w, --watch         构建后持续监听，md 变动自动重建
+  -o, --open          构建后用系统默认浏览器打开生成的 HTML
       --out <file>    输出文件路径（默认：<目录>/md-viewer.html）
       --title <text>  站点标题（默认：扫描目录名）
   -h, --help          显示帮助
@@ -29,12 +31,21 @@ const HELP = `md-viewer v${pkg.version} — 扫描目录下所有 *.md，构建�
   MD_VIEWER_OUT       输出文件路径（--out 优先）
   MD_VIEWER_TITLE     站点标题（--title 优先）`;
 
+/** 用系统默认浏览器打开文件（macOS: open / Windows: start / Linux: xdg-open） */
+function openInBrowser(file) {
+  const cmd = process.platform === 'darwin' ? 'open'
+    : process.platform === 'win32' ? 'cmd' : 'xdg-open';
+  const args = process.platform === 'win32' ? ['/c', 'start', '', file] : [file];
+  spawn(cmd, args, { stdio: 'ignore', detached: true }).unref();
+}
+
 /** 解析 CLI 参数；非法参数抛 Error（由调用方转可读错误） */
 function parseArgs(argv) {
-  const opts = { watch: false, out: null, title: null, dir: null };
+  const opts = { watch: false, open: false, out: null, title: null, dir: null };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--watch' || a === '-w') opts.watch = true;
+    else if (a === '--open' || a === '-o') opts.open = true;
     else if (a === '--help' || a === '-h') opts.help = true;
     else if (a === '--version' || a === '-v') opts.version = true;
     else if (a === '--out' || a === '--title') {
@@ -79,4 +90,5 @@ try {
   process.exit(1);
 }
 
+if (opts.open) openInBrowser(OUT_FILE);
 if (opts.watch) startWatch(SRC_DIR, runBuild);
