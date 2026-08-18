@@ -1,0 +1,24 @@
+node_modules/
+
+# 构建与测试产物
+dist/
+build/
+coverage/
+md-viewer.html
+*.log
+
+# 本地环境变量
+.env
+.env.*
+!.env.example
+
+# 编辑器与操作系统文件
+.DS_Store
+.vscode/
+.idea/
+
+# npm 调试日志
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

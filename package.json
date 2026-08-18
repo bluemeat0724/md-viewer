@@ -1,0 +1,30 @@
+{
+  "name": "md-viewer",
+  "version": "0.1.0",
+  "description": "Scan a directory of Markdown files and build a self-contained, offline md-viewer.html",
+  "type": "module",
+  "bin": {
+    "md-viewer": "bin/md-viewer.mjs"
+  },
+  "files": [
+    "bin",
+    "lib"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "markdown",
+    "viewer",
+    "cli",
+    "mermaid",
+    "offline"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "marked": "^18.0.10",
+    "highlight.js": "^11.12.0",
+    "mermaid": "^11.16.1",
+    "esbuild": "^0.28.2"
+  }
+}
