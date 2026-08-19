@@ -74,6 +74,7 @@
   },
   "files": [
     "lib",
+    "src",
     "cordis.patch.yml",
     "README.md",
     "README.zh.md"
