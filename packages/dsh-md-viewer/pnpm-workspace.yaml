@@ -1,0 +1,8 @@
+packages:
+  - '.'
+
+allowBuilds:
+  esbuild: true
+
+minimumReleaseAgeExclude:
+  - '@bluemeat0724/md-viewer@0.4.0'

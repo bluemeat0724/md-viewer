@@ -1,0 +1,199 @@
+/* dsh-md-viewer 全屏查看器覆盖层样式。 */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 17, 21, 0.92);
+  backdrop-filter: blur(8px);
+  color: #e6edf3;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  pointer-events: auto;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(22, 27, 34, 0.96);
+}
+.title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+.dirInput {
+  flex: 1;
+  min-width: 140px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  background: #0d1117;
+  color: #e6edf3;
+  font-size: 13px;
+  outline: none;
+}
+.dirInput:focus {
+  border-color: #4493f8;
+}
+
+.button {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #21262d;
+  color: #e6edf3;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.button:hover {
+  background: #30363d;
+}
+.primary {
+  background: #1f6feb;
+  border-color: #1f6feb;
+  color: #fff;
+}
+.primary:hover {
+  background: #388bfd;
+}
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.danger {
+  background: transparent;
+}
+
+.badge {
+  font-size: 10.5px;
+  color: #8b949e;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  padding: 1px 8px;
+  white-space: nowrap;
+}
+.badgeOk {
+  color: #3fb950;
+  border-color: rgba(63, 185, 80, 0.4);
+}
+
+.body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.side {
+  width: 280px;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  overflow-y: auto;
+  background: rgba(13, 17, 23, 0.7);
+  padding: 10px;
+}
+.sideTitle {
+  margin: 10px 6px 8px;
+  font-size: 12px;
+  color: #8b949e;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.workspace {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  background: rgba(22, 27, 34, 0.6);
+  cursor: pointer;
+}
+.workspace:hover {
+  border-color: #4493f8;
+}
+.workspaceActive {
+  border-color: #1f6feb;
+  background: rgba(31, 111, 235, 0.12);
+}
+.wsTitleRow {
+  font-size: 13.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.wsTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wsPath {
+  font-size: 11px;
+  color: #8b949e;
+  margin-top: 3px;
+  word-break: break-all;
+  line-height: 1.5;
+}
+.wsActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.frameWrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.frame {
+  flex: 1;
+  width: 100%;
+  border: 0;
+  background: #fff;
+}
+.empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8b949e;
+  font-size: 13px;
+}
+
+.status {
+  padding: 6px 14px;
+  font-size: 12px;
+  color: #8b949e;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(13, 17, 23, 0.9);
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+@media (max-width: 820px) {
+  .body {
+    flex-direction: column;
+  }
+  .side {
+    width: auto;
+    max-height: 200px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+}

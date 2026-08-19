@@ -1,0 +1,41 @@
+/* dsh-md-viewer 入口按钮样式（会话标题栏 + 侧边栏底部共用）。 */
+
+.headerAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  background: color-mix(in srgb, currentColor 5%, transparent);
+  color: inherit;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 12.5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.headerAction:hover {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.sidebarEntry {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  border-radius: 8px;
+  padding: 5px 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.sidebarEntry:hover {
+  background: color-mix(in srgb, currentColor 8%, transparent);
+}
+.sidebarLabel {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
