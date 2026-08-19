@@ -75,6 +75,14 @@ md-viewer --harness   # 生成文档到.agent 目录下并开启watch
 
 优先级：CLI 参数 > 环境变量 > 默认值。
 
+## DSH 插件（dsh-md-viewer）
+
+`packages/dsh-md-viewer/` 是本引擎的 DSH 插件封装（独立 npm 包
+`@bluemeat0724/dsh-md-viewer`）：在 DeepSeek Harness Web GUI 中浏览任意工作区
+的 Markdown——进程内复用本引擎的渲染管线，提供会话标题栏/侧边栏入口、全屏
+iframe 预览与 `mdv_build` / `mdv_status` Agent 工具。详见
+[packages/dsh-md-viewer/README.zh.md](packages/dsh-md-viewer/README.zh.md)。
+
 ## 程序化 API
 
 除 CLI 外，`@bluemeat0724/md-viewer` 提供 Node 程序化入口（`lib/index.mjs`，含
