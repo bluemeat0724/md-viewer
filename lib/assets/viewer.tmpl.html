@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>%%TITLE%%</title>
+<style>
+%%CSS%%
+</style>
+<script>
+(function(){try{var t=localStorage.getItem('mdv-theme')||'auto';var d=t==='dark'||(t==='auto'&&window.matchMedia&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.setAttribute('data-theme',d?'dark':'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();
+</script>
+</head>
+<body>
+<div id="app">
+  <aside id="sidebar">
+    <div class="sidebar-head">
+      <div class="brand">📚 %%TITLE%%</div>
+      <button id="sidebar-close" title="关闭目录" aria-label="关闭目录">×</button>
+    </div>
+    <input id="search" type="search" placeholder="搜索文件名 / 正文… ( / )" autocomplete="off">
+    <div id="search-count"></div>
+    <nav id="toc" aria-label="文档目录"></nav>
+    <div id="side-foot" class="side-foot"></div>
+  </aside>
+  <div id="scrim" role="presentation"></div>
+  <main id="main">
+    <header class="toolbar">
+      <button id="sidebar-toggle" title="目录" aria-label="打开目录">☰</button>
+      <div class="crumbs"><span class="crumb-root">%%TITLE%%</span>&nbsp;/&nbsp;<span id="crumb-doc">…</span></div>
+      <div class="toolbar-actions">
+        <button class="tbtn" id="btn-prev" title="上一篇 ( [ )">← 上一篇</button>
+        <button class="tbtn" id="btn-next" title="下一篇 ( ] )">下一篇 →</button>
+        <button class="tbtn" id="btn-theme" title="主题：自动 / 浅色 / 深色">🌗</button>
+        <button class="tbtn" id="btn-print" title="打印当前文档">🖨</button>
+      </div>
+    </header>
+    <div id="content-wrap">
+      <div id="docs">
+        <article class="doc" id="doc-content"></article>
+      </div>
+      <nav id="outline" aria-label="本页目录">
+        <div class="outline-title">本页目录</div>
+        <div id="outline-list"></div>
+      </nav>
+    </div>
+  </main>
+</div>
+<script>
+%%MARKED_BUNDLE%%
+</script>
+<script>
+%%HLJS_BUNDLE%%
+</script>
+<script>
+%%MERMAID_BUNDLE%%
+</script>
+<script>
+%%APP_JS%%
+</script>
+</body>
+</html>

@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
  * md-viewer — 扫描目录下所有 *.md，构建自包含的离线 md-viewer.html。
- * 薄入口：解析参数 → 调 lib/build.mjs。
+ * 薄入口：解析参数 → 调 lib/index.mjs（公共 API）。
  */
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
-import { build, startWatch } from '../lib/build.mjs';
+import { build, startWatch } from '../lib/index.mjs';
 
 const require = createRequire(import.meta.url);
 const pkg = require('../package.json');

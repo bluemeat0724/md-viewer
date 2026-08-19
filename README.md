@@ -75,6 +75,29 @@ md-viewer --harness   # 生成文档到.agent 目录下并开启watch
 
 优先级：CLI 参数 > 环境变量 > 默认值。
 
+## 程序化 API
+
+除 CLI 外，`@bluemeat0724/md-viewer` 提供 Node 程序化入口（`lib/index.mjs`，含
+`lib/index.d.ts` 类型声明），供其他工具（如 dsh 插件）直接复用渲染能力：
+
+```js
+import { build, startWatch, findMds } from '@bluemeat0724/md-viewer';
+
+await build({ srcDir: '/path/to/docs', outFile: '/tmp/md-viewer.html', title: '我的文档' });
+const mds = await findMds('/path/to/docs'); // 相对路径列表（跳过隐藏项与依赖目录）
+startWatch('/path/to/docs', () => build({ srcDir: '/path/to/docs', outFile: '/tmp/md-viewer.html', title: '我的文档' }));
+```
+
+依赖（marked / highlight.js / mermaid / esbuild）随包安装预置，调用零等待。
+
+## 开发与测试
+
+- 资产文件（页面样式 / 共享渲染核心 / 浏览器查看器）位于 `lib/assets/`：
+  Node 构建侧与浏览器查看器共用 `viewer-core.js` 一份源码，不要在别处复制
+  这些函数（`npm test` 有行为一致性护栏）。
+- 测试：`npm test`（node:test 单测 + 集成测试，覆盖渲染 / 高亮 / mermaid /
+  链接重写 / 跳过规则）。
+
 ## 注意事项
 
 - `--watch` 基于 `fs.watch(recursive)`，是 OS 级事件监听（macOS 走 FSEvents，非轮询）：空闲时近零 CPU，仅 md 变动时触发重建；事件带 300ms 防抖与重建串行锁，连续保存不会连环重建。macOS / Windows / 较新 Linux 内核均支持；部分旧 Linux 发行版（< 5.x 内核）对递归监听支持有限，如不生效可退回「改动后手动重跑 `md-viewer`」。

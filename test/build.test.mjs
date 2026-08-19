@@ -1,0 +1,131 @@
+/**
+ * build() 集成测试：临时目录样例文档 → 断言输出自包含 HTML 的关键语义。
+ * 覆盖：文档渲染、代码高亮、mermaid 占位还原、跨文档链接重写、跳过规则。
+ */
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+
+import { build, findMds } from '../lib/index.mjs';
+
+/** 样例文档树 */
+const FILES = {
+  'README.md': [
+    '# 项目说明',
+    '',
+    '内部链接：[子文档](docs/child.md) 与 [带锚点](docs/child.md#小节)。',
+    '',
+    '```js',
+    'const answer = 42;',
+    '```',
+    '',
+    '```mermaid',
+    'graph TD; A-->B;',
+    '```',
+  ].join('\n'),
+  'docs/child.md': [
+    '# 子文档',
+    '',
+    '## 小节',
+    '',
+    '引用 [README](../README.md)。',
+  ].join('\n'),
+  'node_modules/ignored.md': '# 不应被扫描',
+  '.hidden.md': '# 隐藏文件不应被扫描',
+};
+
+async function makeFixture() {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'mdv-test-'));
+  for (const [rel, content] of Object.entries(FILES)) {
+    const full = path.join(dir, rel);
+    await fs.mkdir(path.dirname(full), { recursive: true });
+    await fs.writeFile(full, content, 'utf8');
+  }
+  return dir;
+}
+
+test('findMds：递归收集、跳过隐藏与依赖目录', async () => {
+  const dir = await makeFixture();
+  try {
+    const rels = await findMds(dir);
+    assert.deepEqual(rels.sort(), ['README.md', 'docs/child.md']);
+  } finally {
+    await fs.rm(dir, { recursive: true, force: true });
+  }
+});
+
+/** 从产物解析出 SNAPSHOT（文档快照）与 META，断言针对解码后的真实数据 */
+function parsePayloads(html) {
+  const snap = /var SNAPSHOT = ([\s\S]*?);\s*var SITE_TITLE/.exec(html);
+  const meta = /var META = ([\s\S]*?);\s*var SNAPSHOT/.exec(html);
+  assert.ok(snap, '产物应包含 SNAPSHOT');
+  assert.ok(meta, '产物应包含 META');
+  return { docs: JSON.parse(snap[1]), meta: JSON.parse(meta[1]) };
+}
+
+test('build：生成自包含 HTML，渲染/高亮/mermaid/链接重写正确', async () => {
+  const dir = await makeFixture();
+  const outFile = path.join(dir, 'out', 'md-viewer.html');
+  try {
+    await build({ srcDir: dir, outFile, title: '测试站点' });
+
+    const html = await fs.readFile(outFile, 'utf8');
+    assert.ok(html.length > 100_000, '产物应包含内嵌依赖 bundle');
+
+    // 标题注入（<title> 与 brand）
+    assert.match(html, /<title>测试站点<\/title>/);
+    assert.match(html, /<div class="brand">📚 测试站点<\/div>/);
+
+    // 快照数据：2 篇文档，跳过 node_modules 与隐藏文件
+    const { docs, meta } = parsePayloads(html);
+    assert.equal(docs.length, 2);
+    assert.equal(meta.fileCount, 2);
+    assert.equal(meta.buildCmd, 'md-viewer');
+
+    const readme = docs.find((d) => d.path === 'README.md');
+    const child = docs.find((d) => d.path === 'docs/child.md');
+    assert.ok(readme && child, 'README 与 docs/child.md 都应存在');
+
+    // marked GFM 渲染 + 标题 id
+    assert.match(readme.html, /<h1 id="项目说明">项目说明<\/h1>/);
+    assert.match(child.html, /<h1 id="子文档">子文档<\/h1>/);
+    // 代码高亮（hljs class 注入）
+    assert.match(readme.html, /class="language-js hljs"/);
+    assert.match(readme.html, /hljs-keyword/);
+    // mermaid 块还原为 pre.mermaid（未渲染的原代码）
+    assert.match(readme.html, /<pre class="mermaid">graph TD; A--&gt;B;<\/pre>/);
+    // 跨文档链接重写（README → docs/child.md）
+    assert.match(readme.html, /<a href="#doc-docs-child">子文档<\/a>/);
+    assert.match(readme.html, /<a href="#doc-docs-child" data-anchor="小节">带锚点<\/a>/);
+    // 子文档的 ../ 相对链接：不在快照路径表中（Map 以扫描根为基准），
+    // 按既有行为原样保留（file:// 下会指向源 md 文件）
+    assert.match(child.html, /<a href="\.\.\/README\.md">README<\/a>/);
+    // slug 生成正确
+    assert.equal(readme.slug, 'README');
+    assert.equal(child.slug, 'docs-child');
+    assert.equal(child.group, 'docs');
+
+    // 浏览器共享核心与查看器都已内联
+    assert.ok(html.includes('MDV_CORE'), 'viewer-core 应内联');
+    assert.ok(html.includes('MDV.escHtml'), 'viewer.js 应引用 MDV_CORE');
+  } finally {
+    await fs.rm(dir, { recursive: true, force: true });
+  }
+});
+
+test('build：空文档目录也能生成（0 篇）', async () => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'mdv-empty-'));
+  const outFile = path.join(dir, 'md-viewer.html');
+  try {
+    await build({ srcDir: dir, outFile, title: '空站点' });
+    const html = await fs.readFile(outFile, 'utf8');
+    assert.match(html, /<title>空站点<\/title>/);
+    const { docs, meta } = parsePayloads(html);
+    assert.equal(docs.length, 0);
+    assert.equal(meta.fileCount, 0);
+  } finally {
+    await fs.rm(dir, { recursive: true, force: true });
+  }
+});

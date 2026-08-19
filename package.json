@@ -6,6 +6,16 @@
   "bin": {
     "md-viewer": "bin/md-viewer.mjs"
   },
+  "main": "lib/index.mjs",
+  "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "default": "./lib/index.mjs"
+    },
+    "./lib/*": "./lib/*",
+    "./package.json": "./package.json"
+  },
   "files": [
     "bin",
     "lib"
@@ -26,5 +36,8 @@
     "highlight.js": "^11.12.0",
     "mermaid": "^11.16.1",
     "esbuild": "^0.28.2"
+  },
+  "scripts": {
+    "test": "node --test"
   }
 }
