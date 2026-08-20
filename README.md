@@ -115,3 +115,8 @@ startWatch('/path/to/docs', () => build({ srcDir: '/path/to/docs', outFile: '/tm
 ## 许可
 
 MIT
+
+
+## change log
+
+见 [change-log.md](./change-log.md)。

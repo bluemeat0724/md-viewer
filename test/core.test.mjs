@@ -10,7 +10,7 @@ const C = globalThis.MDV_CORE;
 
 test('MDV_CORE 已通过副作用导入挂载', () => {
   assert.ok(C, 'globalThis.MDV_CORE 应为对象');
-  for (const name of ['escHtml', 'unescHtml', 'slugifyHeading', 'slugForPath', 'extractMermaid', 'addHeaderIds', 'highlightCode', 'rewriteLinks', 'titleFromHtml']) {
+  for (const name of ['escHtml', 'unescHtml', 'slugifyHeading', 'slugForPath', 'normalizeRelPath', 'extractMermaid', 'addHeaderIds', 'highlightCode', 'rewriteLinks', 'titleFromHtml']) {
     assert.equal(typeof C[name], 'function', `${name} 应为函数`);
   }
 });
@@ -97,6 +97,38 @@ test('rewriteLinks：内部 .md 链接重写、外部与缺失目标保留', () 
   assert.match(out, /<a href="https:\/\/example\.com\/x\.md">外部<\/a>/);
   assert.match(out, /<a href="missing\.md">缺失<\/a>/);
   assert.match(out, /<a href="#local">本地锚<\/a>/);
+});
+
+test('rewriteLinks：按所在文档目录解析相对链接，根相对写法兜底', () => {
+  const docByPath = new Map([
+    ['README.md', { slug: 'README' }],
+    ['docs/child.md', { slug: 'docs-child' }],
+    ['docs/sub/deep.md', { slug: 'docs-sub-deep' }],
+  ]);
+  const html = [
+    '<a href="sub/deep.md">同目录子级</a>',
+    '<a href="./sub/deep.md">点斜线</a>',
+    '<a href="../README.md">上级</a>',
+    '<a href="../README.md#小节">上级锚点</a>',
+    '<a href="docs/child.md">根相对兜底</a>',
+    '<a href="../../outside.md">越界</a>',
+    '<a href="nope.md">缺失</a>',
+  ].join('');
+  const out = C.rewriteLinks(html, docByPath, 'docs/child.md');
+  assert.match(out, /<a href="#doc-docs-sub-deep">同目录子级<\/a>/);
+  assert.match(out, /<a href="#doc-docs-sub-deep">点斜线<\/a>/);
+  assert.match(out, /<a href="#doc-README">上级<\/a>/);
+  assert.match(out, /<a href="#doc-README" data-anchor="小节">上级锚点<\/a>/);
+  assert.match(out, /<a href="#doc-docs-child">根相对兜底<\/a>/);
+  assert.match(out, /<a href="\.\.\/\.\.\/outside\.md">越界<\/a>/);
+  assert.match(out, /<a href="nope\.md">缺失<\/a>/);
+});
+
+test('normalizeRelPath：折叠 ./ 与 ..，越界返回 null', () => {
+  assert.equal(C.normalizeRelPath('a/./b//c'), 'a/b/c');
+  assert.equal(C.normalizeRelPath('a/b/../c'), 'a/c');
+  assert.equal(C.normalizeRelPath('../a'), null);
+  assert.equal(C.normalizeRelPath('a\\b'), 'a/b');
 });
 
 test('titleFromHtml：取首个 H1 纯文本，无 H1 用 fallback', () => {

@@ -44,7 +44,7 @@ a:hover{text-decoration:underline}
 }
 .sidebar-head{display:flex; align-items:center; justify-content:space-between; padding:14px 14px 10px; gap:8px}
 .brand{font-weight:700; font-size:15px; line-height:1.35}
-#sidebar-close{display:none; border:0; background:none; color:var(--muted); font-size:20px; cursor:pointer}
+#sidebar-close{border:0; background:none; color:var(--muted); font-size:20px; cursor:pointer}
 #search{
   margin:0 12px 8px; padding:8px 10px; border:1px solid var(--border); border-radius:8px;
   background:var(--bg); color:var(--fg); font-size:13px; outline:none; width:calc(100% - 24px);
@@ -82,6 +82,13 @@ button.toc-group-title:hover{color:var(--fg); background:var(--hover); border-ra
   padding:10px 14px; border-top:1px solid var(--border); font-size:11.5px; color:var(--muted); line-height:1.6; white-space:pre-line;
 }
 #scrim{display:none}
+/* ---------------- 桌面端侧边栏折叠（☰ / ⌘/Ctrl+B 切换） ---------------- */
+/* 注意：折叠时侧边栏 display:none 不再是网格项，#app 必须改为单列，
+   否则 #main 会落入第一列（0 宽）导致正文被挤成竖条 */
+@media (min-width:1024px){
+  body.sidebar-collapsed #app{grid-template-columns:minmax(0,1fr)}
+  body.sidebar-collapsed #sidebar{display:none}
+}
 /* ---------------- 主区 ---------------- */
 #main{display:flex; flex-direction:column; min-width:0; min-height:100vh}
 .toolbar{
@@ -89,7 +96,7 @@ button.toc-group-title:hover{color:var(--fg); background:var(--hover); border-ra
   padding:10px 16px; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(6px);
   border-bottom:1px solid var(--border);
 }
-#sidebar-toggle{display:none; border:1px solid var(--border); background:none; color:var(--fg); border-radius:8px; padding:4px 10px; font-size:15px; cursor:pointer}
+#sidebar-toggle{border:1px solid var(--border); background:none; color:var(--fg); border-radius:8px; padding:4px 10px; font-size:15px; cursor:pointer}
 .crumbs{flex:1; min-width:0; font-size:13px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
 .crumb-root{color:var(--muted)}
 #crumb-doc{color:var(--fg); font-weight:600}

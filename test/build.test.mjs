@@ -99,9 +99,8 @@ test('build：生成自包含 HTML，渲染/高亮/mermaid/链接重写正确', 
     // 跨文档链接重写（README → docs/child.md）
     assert.match(readme.html, /<a href="#doc-docs-child">子文档<\/a>/);
     assert.match(readme.html, /<a href="#doc-docs-child" data-anchor="小节">带锚点<\/a>/);
-    // 子文档的 ../ 相对链接：不在快照路径表中（Map 以扫描根为基准），
-    // 按既有行为原样保留（file:// 下会指向源 md 文件）
-    assert.match(child.html, /<a href="\.\.\/README\.md">README<\/a>/);
+    // 子文档的 ../ 相对链接：按所在文档目录解析命中快照中的 README.md
+    assert.match(child.html, /<a href="#doc-README">README<\/a>/);
     // slug 生成正确
     assert.equal(readme.slug, 'README');
     assert.equal(child.slug, 'docs-child');
@@ -110,6 +109,15 @@ test('build：生成自包含 HTML，渲染/高亮/mermaid/链接重写正确', 
     // 浏览器共享核心与查看器都已内联
     assert.ok(html.includes('MDV_CORE'), 'viewer-core 应内联');
     assert.ok(html.includes('MDV.escHtml'), 'viewer.js 应引用 MDV_CORE');
+
+    // 侧边栏折叠：桌面端折叠样式/状态持久化 + ⌘/Ctrl+B 快捷键
+    assert.ok(html.includes('sidebar-collapsed'), '应内联桌面端侧边栏折叠逻辑');
+    assert.ok(html.includes('mdv-sidebar'), '应内联折叠偏好持久化键');
+    assert.ok(html.includes('metaKey || ev.ctrlKey'), '快捷键应同时支持 ⌘ 与 Ctrl');
+    assert.match(html, /⌘\/Ctrl\+B/, '按钮提示应包含快捷键说明');
+    // 折叠时 #app 必须改单列：侧边栏 display:none 后不再是网格项，
+    // 若保留 0 宽第一列，#main 会落入其中被挤成竖条
+    assert.ok(html.includes('body.sidebar-collapsed #app{grid-template-columns:minmax(0,1fr)}'), '折叠态网格应为单列');
   } finally {
     await fs.rm(dir, { recursive: true, force: true });
   }
