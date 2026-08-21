@@ -32,6 +32,15 @@ test('slugForPath：去 .md 后缀、非字母数字转连字符', () => {
   assert.equal(C.slugForPath('a.b/c-d.md'), 'a-b-c-d');
 });
 
+test('slugForPath：保留中文等 Unicode 字符，中文文档不塌缩为同一 slug', () => {
+  assert.equal(C.slugForPath('docs/BusinessContext自动构建任务指南.md'), 'docs-BusinessContext自动构建任务指南');
+  assert.equal(C.slugForPath('docs/场景模拟.md'), 'docs-场景模拟');
+  assert.notEqual(
+    C.slugForPath('docs/BusinessContext自动构建任务指南.md'),
+    C.slugForPath('docs/BusinessContext待确认字段清单.md'),
+  );
+});
+
 test('extractMermaid：抽取 mermaid 块、保留其他围栏', () => {
   const md = [
     '# T',

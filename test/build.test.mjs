@@ -145,3 +145,35 @@ test('build：空文档目录也能生成（0 篇）', async () => {
     await fs.rm(dir, { recursive: true, force: true });
   }
 });
+
+test('build：中文路径 slug 保留原字符；自然 slug 冲突时追加序号去重', async () => {
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'mdv-slug-'));
+  try {
+    // a/b.md 与 a-b.md 的自然 slug 同为 a-b；两个中文路径文档此前会塌缩为同一 slug
+    await fs.mkdir(path.join(dir, 'a'), { recursive: true });
+    await fs.mkdir(path.join(dir, 'docs'), { recursive: true });
+    await fs.writeFile(path.join(dir, 'a/b.md'), '链接 [dash](../a-b.md)', 'utf8');
+    await fs.writeFile(path.join(dir, 'a-b.md'), '# Dash', 'utf8');
+    await fs.writeFile(path.join(dir, 'docs/BusinessContext分析框架.md'), '# 框架', 'utf8');
+    await fs.writeFile(path.join(dir, 'docs/BusinessContext待确认字段清单.md'), '# 清单', 'utf8');
+
+    const outFile = path.join(dir, 'md-viewer.html');
+    await build({ srcDir: dir, outFile, title: 'slug 站点' });
+    const { docs } = parsePayloads(await fs.readFile(outFile, 'utf8'));
+
+    const slugs = docs.map((d) => d.slug);
+    assert.equal(new Set(slugs).size, slugs.length, '所有文档 slug 应唯一');
+
+    const dash = docs.find((d) => d.path === 'a-b.md');
+    const b = docs.find((d) => d.path === 'a/b.md');
+    assert.notEqual(dash.slug, b.slug, 'a/b.md 与 a-b.md 不应共享 slug');
+    assert.match(b.html, new RegExp('<a href="#doc-' + dash.slug + '">dash</a>'));
+
+    const cn1 = docs.find((d) => d.path === 'docs/BusinessContext分析框架.md');
+    const cn2 = docs.find((d) => d.path === 'docs/BusinessContext待确认字段清单.md');
+    assert.equal(cn1.slug, 'docs-BusinessContext分析框架');
+    assert.equal(cn2.slug, 'docs-BusinessContext待确认字段清单');
+  } finally {
+    await fs.rm(dir, { recursive: true, force: true });
+  }
+});
