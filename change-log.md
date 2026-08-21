@@ -1,5 +1,18 @@
 # Change Log
 
+## 0.6.2（2026-08-21）
+
+### 修复
+
+- **中文路径文档 slug 塌缩**：`slugForPath` 原先以 `[^A-Za-z0-9]+` 归一化路径，中文文件名整段被剥除，`docs/BusinessContext分析框架.md` 等 7 篇同前缀文档共享同一 slug，导致侧栏目录多项同时高亮、点击任一项实际打开的都是扫描顺序里最后那篇。现改为 Unicode 感知规则 `[^\p{L}\p{N}]+`（与标题锚点 `slugifyHeading` 一致），中文路径保留原字符；纯 ASCII 路径的 slug 输出不变，已有链接地址不受影响。
+- **构建期 slug 去重**：登记路径 → slug 时对冲突追加 `-2` / `-3` 序号（与标题锚点去重做法一致），兜住 `a/b.md` 与 `a-b.md` 这类归一后仍相同的残余碰撞；跨文档链接重写自动使用去重后的 slug。
+- **hash 中文解码**：浏览器会把 hash 中的非 ASCII 字符 percent-encode，`slugFromHash` 读回时补充 `decodeURIComponent`（畸形序列回退原文），否则含中文 slug 的地址在刷新 / hashchange 后无法命中文档。
+
+### 测试
+
+- `core.test.mjs`：新增 `slugForPath` 中文路径保留原字符、不同中文文档不塌缩为同一 slug 的用例。
+- `build.test.mjs`：新增构建产物 slug 全局唯一、自然冲突追加序号、中文 slug 端到端保留的用例。
+
 ## 0.6.0（2026-08-20）
 
 UI 全面重设计：冷静编辑感的中性冷灰 + 单一靛蓝强调色，GitHub 克隆观感升级为独立的视觉体系。
