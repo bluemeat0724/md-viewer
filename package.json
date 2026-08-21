@@ -1,6 +1,6 @@
 {
   "name": "@bluemeat0724/md-viewer",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Scan a directory of Markdown files and build a self-contained, offline md-viewer.html",
   "type": "module",
   "bin": {
