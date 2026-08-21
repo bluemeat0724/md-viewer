@@ -76,7 +76,8 @@ test('build：生成自包含 HTML，渲染/高亮/mermaid/链接重写正确', 
 
     // 标题注入（<title> 与 brand）
     assert.match(html, /<title>测试站点<\/title>/);
-    assert.match(html, /<div class="brand">📚 测试站点<\/div>/);
+    assert.match(html, /<div class="brand">/);
+    assert.match(html, /<span class="brand-name">测试站点<\/span>/);
 
     // 快照数据：2 篇文档，跳过 node_modules 与隐藏文件
     const { docs, meta } = parsePayloads(html);
@@ -118,6 +119,13 @@ test('build：生成自包含 HTML，渲染/高亮/mermaid/链接重写正确', 
     // 折叠时 #app 必须改单列：侧边栏 display:none 后不再是网格项，
     // 若保留 0 宽第一列，#main 会落入其中被挤成竖条
     assert.ok(html.includes('body.sidebar-collapsed #app{grid-template-columns:minmax(0,1fr)}'), '折叠态网格应为单列');
+
+    // UI 重设计资产：SVG 图标 sprite、代码复制、焦点可达性、单源双主题、窄屏目录
+    assert.ok(html.includes('<symbol id="i-menu"'), '应内嵌 SVG 图标 sprite');
+    assert.ok(html.includes('code-copy'), '应有代码块复制按钮');
+    assert.ok(html.includes(':focus-visible'), '应有键盘焦点样式');
+    assert.ok(html.includes('light-dark('), '主题令牌应使用 light-dark() 单源定义');
+    assert.ok(html.includes('outline-pop'), '窄屏应有本页目录弹层');
   } finally {
     await fs.rm(dir, { recursive: true, force: true });
   }

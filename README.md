@@ -9,11 +9,13 @@
 - 递归扫描 `*.md`（自动跳过 `node_modules`、`.git`、`dist`、`build`、`.venv` 及隐藏目录）
 - GFM 渲染（marked）+ 代码高亮（highlight.js）+ Mermaid 图表渲染
 - 文件树侧边栏：文件夹在前、文件在后，目录默认折叠，深链自动展开祖先
-- 全文搜索（标题 + 路径 + 正文，`/` 键聚焦）
-- 深浅主题三态循环（auto / light / dark），Mermaid 随主题重渲染
-- 上一篇 / 下一篇导航、页内大纲（右侧 outline，滚动高亮）
+- 全文搜索（标题 + 路径 + 正文，`/` 键聚焦，一键清空，无命中的分组自动隐藏）
+- 深浅主题三态循环（auto / light / dark），Mermaid 随主题重渲染，打印固定浅色
+- 上一篇 / 下一篇导航、页内大纲（右侧 outline 滚动高亮；窄屏改为工具栏弹层）
+- 代码块一键复制（`file://` 下自动降级 execCommand）、标题悬停锚点跳转
 - 跨文档 `.md` 链接自动重写为页内锚点跳转
 - Mermaid 独立缩放容器：滚轮缩放、拖拽平移、100%–400%、全屏
+- 内嵌 Tabler 线性图标（MIT）与设计令牌体系；键盘可达（`:focus-visible` 焦点环、`prefers-reduced-motion` 降级）
 - `--watch` 监听 md 变动自动重建
 - 构建秒级完成：依赖随安装预置，运行零等待
 
@@ -108,6 +110,7 @@ startWatch('/path/to/docs', () => build({ srcDir: '/path/to/docs', outFile: '/tm
 
 ## 注意事项
 
+- 主题令牌基于 CSS `light-dark()`，需 Chrome 123+ / Safari 17.5+ / Firefox 120+（2024 年中以来的主流浏览器均满足）；更旧的浏览器会退化为无主题样式。
 - `--watch` 基于 `fs.watch(recursive)`，是 OS 级事件监听（macOS 走 FSEvents，非轮询）：空闲时近零 CPU，仅 md 变动时触发重建；事件带 300ms 防抖与重建串行锁，连续保存不会连环重建。macOS / Windows / 较新 Linux 内核均支持；部分旧 Linux 发行版（< 5.x 内核）对递归监听支持有限，如不生效可退回「改动后手动重跑 `md-viewer`」。
 - 生成的 HTML 内嵌 marked / highlight.js / mermaid 浏览器 bundle（约 3–4 MB），文档越多文件越大。
 - 构建失败时退出码为 1，并输出可读错误信息。
