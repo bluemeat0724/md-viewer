@@ -13,6 +13,10 @@
 - `core.test.mjs`：新增 `slugForPath` 中文路径保留原字符、不同中文文档不塌缩为同一 slug 的用例。
 - `build.test.mjs`：新增构建产物 slug 全局唯一、自然冲突追加序号、中文 slug 端到端保留的用例。
 
+### 其他
+
+- dsh 插件（`@bluemeat0724/dsh-md-viewer`）引擎依赖由 0.4.0 同步升至 `^0.6.2`，补齐 0.5.1 相对链接解析修复与 0.6.0 UI 重设计；刚发布的版本装进 pnpm 11 会撞 24h 发布年龄默认策略，插件 `pnpm-workspace.yaml` 的 `minimumReleaseAgeExclude` 已随动更新。发布流程与踩坑见 `PUBLISH.md`（插件章节）。
+
 ## 0.6.0（2026-08-20）
 
 UI 全面重设计：冷静编辑感的中性冷灰 + 单一靛蓝强调色，GitHub 克隆观感升级为独立的视觉体系。
