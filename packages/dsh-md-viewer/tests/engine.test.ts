@@ -45,7 +45,7 @@ describe('MdViewerEngine', () => {
       const meta = await engine.build(dir)
 
       expect(meta.dir).toBe(dir)
-      expect(meta.outFile).toBe(join(dir, '.agent', 'md-viewer.html'))
+      expect(meta.outFile).toBe(join(dir, '.agents', 'md-viewer.html'))
       expect(meta.url).toBe('/mdv/' + encodeURIComponent(dir))
       expect(meta.fileCount).toBe(2)
       expect(meta.sizeMB).toBeGreaterThan(0)

@@ -4,7 +4,7 @@
  *
  * 与 CLI 不同，这里不 spawn 子进程：直接调用包的程序化 API
  * （build / findMds），写入使用宿主进程权限——构建是用户在 GUI 主动触发的、
- * 只写所选目录下 <dir>/.agent/md-viewer.html 一个文件（安全模型见 README）。
+ * 只写所选目录下 <dir>/.agents/md-viewer.html 一个文件（安全模型见 README）。
  */
 import { build as buildHtml, findMds } from '@bluemeat0724/md-viewer'
 import { readFile } from 'node:fs/promises'
@@ -44,7 +44,7 @@ export class MdViewerEngine {
 
   /** 构建并缓存快照。写入失败/目录不存在时抛错（由路由层转 JSON 错误）。 */
   async build(dir: string): Promise<SnapshotMeta> {
-    const outFile = join(dir, '.agent', 'md-viewer.html')
+    const outFile = join(dir, '.agents', 'md-viewer.html')
     const title = basename(dir) || dir
     await buildHtml({ srcDir: dir, outFile, title })
     const html = await readFile(outFile, 'utf8')

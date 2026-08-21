@@ -7,7 +7,7 @@
 export interface SnapshotMeta {
   /** 被扫描目录（绝对路径，同时是快照的键）。 */
   dir: string
-  /** 输出文件路径（<dir>/.agent/md-viewer.html）。 */
+  /** 输出文件路径（<dir>/.agents/md-viewer.html）。 */
   outFile: string
   /** iframe/新标签浏览地址（相对路径）。 */
   url: string

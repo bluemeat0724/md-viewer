@@ -39,7 +39,7 @@ const SECTION_ORDER = 160
 
 /** 模型可见宣告：插件存在性、能力与限制。 */
 export const MDV_GUIDANCE =
-  '本机已安装 dsh-md-viewer 插件（MD 文档查看器）：侧边栏/会话标题栏「MD 文档」入口，用 md-viewer 引擎（marked + highlight.js + mermaid）把工作区 Markdown 渲染为自包含离线快照并内嵌浏览。能力：mdv_build 构建指定目录（缺省会话工作区，产物在 <目录>/.agent/md-viewer.html）、mdv_status 查看已构建快照；构建由用户在 GUI 触发或 Agent 显式调用，以宿主进程权限写入所选目录下一个文件。用户提到「MD 文档 / Markdown 浏览 / md-viewer」时即指本插件，请据此协作。'
+  '本机已安装 dsh-md-viewer 插件（MD 文档查看器）：侧边栏/会话标题栏「MD 文档」入口，用 md-viewer 引擎（marked + highlight.js + mermaid）把工作区 Markdown 渲染为自包含离线快照并内嵌浏览。能力：mdv_build 构建指定目录（缺省会话工作区，产物在 <目录>/.agents/md-viewer.html）、mdv_status 查看已构建快照；构建由用户在 GUI 触发或 Agent 显式调用，以宿主进程权限写入所选目录下一个文件。用户提到「MD 文档 / Markdown 浏览 / md-viewer」时即指本插件，请据此协作。'
 
 /**
  * Mount the engine, routes, tools, and announcement.

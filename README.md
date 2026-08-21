@@ -50,7 +50,7 @@ md-viewer --watch      # 常驻监听，md 变动自动重建
 md-viewer docs         # 指定扫描目录（位置参数）
 md-viewer --out x.html # 自定义输出文件
 md-viewer --title "我的文档"  # 自定义站点标题
-md-viewer --harness   # 生成文档到.agent 目录下并开启watch
+md-viewer --harness   # 生成文档到.agents 目录下并开启watch
 ```
 
 打开生成的 HTML：使用 `--open`，或双击文件，或 `open md-viewer.html`。md 有变动时重新运行命令（或保持 `--watch` 常驻），刷新浏览器即可。
@@ -62,7 +62,7 @@ md-viewer --harness   # 生成文档到.agent 目录下并开启watch
 | `[目录]` | 扫描根目录，默认当前执行目录 |
 | `-w, --watch` | 构建后持续监听，md 变动自动重建 |
 | `-o, --open` | 构建后用系统默认浏览器打开生成的 HTML |
-| `--harness` | 输出到 `<目录>/.agent/md-viewer.html` 并强制开启 watch（供 Agent 环境常驻） |
+| `--harness` | 输出到 `<目录>/.agents/md-viewer.html` 并强制开启 watch（供 Agent 环境常驻） |
 | `--out <file>` | 输出文件路径，默认 `<目录>/md-viewer.html` |
 | `--title <text>` | 站点标题，默认为扫描目录名 |
 | `-h, --help` | 显示帮助 |

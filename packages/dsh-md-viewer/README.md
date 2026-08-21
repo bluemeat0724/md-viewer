@@ -15,7 +15,7 @@ in the same repository (`packages/dsh-md-viewer`).
 
 - One-click snapshot build: pick a workspace (or type any directory path) and
   click "Build & preview"; the host renders every `*.md` (GFM, code highlight,
-  Mermaid) into `<dir>/.agent/md-viewer.html` and caches it in memory.
+  Mermaid) into `<dir>/.agents/md-viewer.html` and caches it in memory.
 - Embedded preview: a full-screen overlay shows the result in an iframe
   (`/mdv/<dir>` route) — file tree, full-text search, Mermaid zoom, theme
   toggle, plus open-in-new-tab.
@@ -26,7 +26,7 @@ in the same repository (`packages/dsh-md-viewer`).
 ## Security model
 
 - Builds are user-driven (GUI click) or explicitly invoked by the agent
-  (`mdv_build`); the host writes exactly one file, `<dir>/.agent/md-viewer.html`,
+  (`mdv_build`); the host writes exactly one file, `<dir>/.agents/md-viewer.html`,
   with host-process permissions.
 - All `/api/mdv/*` and `/mdv/*` routes carry a loopback-only trust fence.
 - Snapshots live in host memory only.
