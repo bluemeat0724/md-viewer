@@ -2,11 +2,11 @@
 
 [![npm version](https://img.shields.io/npm/v/%40bluemeat0724%2Fmd-viewer)](https://www.npmjs.com/package/@bluemeat0724/md-viewer)
 
-扫描目录下所有 Markdown 文件，构建一个**自包含、离线可用**的 `md-viewer.html`——`file://` 双击直开，无需任何服务。
+扫描目录下所有 Markdown / JSON 文件，构建一个**自包含、离线可用**的 `md-viewer.html`——`file://` 双击直开，无需任何服务。
 
 ## 特性
 
-- 递归扫描 `*.md`（自动跳过 `node_modules`、`.git`、`dist`、`build`、`.venv` 及隐藏目录）
+- 递归扫描 `*.md` / `*.json`（自动跳过 `node_modules`、`.git`、`dist`、`build`、`.venv` 及隐藏目录）
 - GFM 渲染（marked）+ 代码高亮（highlight.js）+ Mermaid 图表渲染
 - 文件树侧边栏：文件夹在前、文件在后，目录默认折叠，深链自动展开祖先
 - 全文搜索（标题 + 路径 + 正文，`/` 键聚焦，一键清空，无命中的分组自动隐藏）
@@ -16,10 +16,12 @@
 - 跨文档 `.md` 链接自动重写为页内锚点跳转
 - Mermaid 独立缩放容器：滚轮缩放、拖拽平移、100%–400%、全屏
 - 内嵌 Tabler 线性图标（MIT）与设计令牌体系；键盘可达（`:focus-visible` 焦点环、`prefers-reduced-motion` 降级）
-- `--watch` 监听 md 变动自动重建
+- `--watch` 监听 md / json 变动自动重建
 - 构建秒级完成：依赖随安装预置，运行零等待
 
 ## 安装
+
+需要 Node.js 20 或更高版本。
 
 ```bash
 npm install -g @bluemeat0724/md-viewer
@@ -46,23 +48,23 @@ npm link
 cd /path/to/any/docs-dir
 md-viewer              # 扫描当前目录，生成 ./md-viewer.html
 md-viewer --open       # 构建后自动用浏览器打开
-md-viewer --watch      # 常驻监听，md 变动自动重建
+md-viewer --watch      # 常驻监听，md / json 变动自动重建
 md-viewer docs         # 指定扫描目录（位置参数）
 md-viewer --out x.html # 自定义输出文件
 md-viewer --title "我的文档"  # 自定义站点标题
-md-viewer --harness   # 生成文档到.agents 目录下并开启watch
+md-viewer --harness   # 生成到 .agents/md-viewer/index.html 并开启 watch
 ```
 
-打开生成的 HTML：使用 `--open`，或双击文件，或 `open md-viewer.html`。md 有变动时重新运行命令（或保持 `--watch` 常驻），刷新浏览器即可。
+打开生成的 HTML：使用 `--open`，或双击文件，或 `open md-viewer.html`。md / json 有变动时重新运行命令（或保持 `--watch` 常驻），刷新浏览器即可。
 
 ## 参数
 
 | 选项 | 说明 |
 |---|---|
 | `[目录]` | 扫描根目录，默认当前执行目录 |
-| `-w, --watch` | 构建后持续监听，md 变动自动重建 |
+| `-w, --watch` | 构建后持续监听 md / json 变动并自动重建 |
 | `-o, --open` | 构建后用系统默认浏览器打开生成的 HTML |
-| `--harness` | 输出到 `<目录>/.agents/md-viewer.html` 并强制开启 watch（供 Agent 环境常驻） |
+| `--harness` | 输出到 `<目录>/.agents/md-viewer/index.html` 并强制开启 watch（供 Agent 环境常驻） |
 | `--out <file>` | 输出文件路径，默认 `<目录>/md-viewer.html` |
 | `--title <text>` | 站点标题，默认为扫描目录名 |
 | `-h, --help` | 显示帮助 |
@@ -91,10 +93,10 @@ iframe 预览与 `mdv_build` / `mdv_status` Agent 工具。详见
 `lib/index.d.ts` 类型声明），供其他工具（如 dsh 插件）直接复用渲染能力：
 
 ```js
-import { build, startWatch, findMds } from '@bluemeat0724/md-viewer';
+import { build, startWatch, findDocs } from '@bluemeat0724/md-viewer';
 
 await build({ srcDir: '/path/to/docs', outFile: '/tmp/md-viewer.html', title: '我的文档' });
-const mds = await findMds('/path/to/docs'); // 相对路径列表（跳过隐藏项与依赖目录）
+const docs = await findDocs('/path/to/docs'); // md/json 相对路径列表（跳过隐藏项与依赖目录）
 startWatch('/path/to/docs', () => build({ srcDir: '/path/to/docs', outFile: '/tmp/md-viewer.html', title: '我的文档' }));
 ```
 
@@ -111,8 +113,10 @@ startWatch('/path/to/docs', () => build({ srcDir: '/path/to/docs', outFile: '/tm
 ## 注意事项
 
 - 主题令牌基于 CSS `light-dark()`，需 Chrome 123+ / Safari 17.5+ / Firefox 120+（2024 年中以来的主流浏览器均满足）；更旧的浏览器会退化为无主题样式。
-- `--watch` 基于 `fs.watch(recursive)`，是 OS 级事件监听（macOS 走 FSEvents，非轮询）：空闲时近零 CPU，仅 md 变动时触发重建；事件带 300ms 防抖与重建串行锁，连续保存不会连环重建。macOS / Windows / 较新 Linux 内核均支持；部分旧 Linux 发行版（< 5.x 内核）对递归监听支持有限，如不生效可退回「改动后手动重跑 `md-viewer`」。
+- `--watch` 基于 `fs.watch(recursive)`，是 OS 级事件监听（macOS 走 FSEvents，非轮询）：空闲时近零 CPU，仅 md / json 变动时触发重建；事件带 300ms 防抖与重建串行锁，连续保存不会连环重建。macOS / Windows / 较新 Linux 内核均支持；部分旧 Linux 发行版（< 5.x 内核）对递归监听支持有限，如不生效可退回「改动后手动重跑 `md-viewer`」。
 - 生成的 HTML 内嵌 marked / highlight.js / mermaid 浏览器 bundle（约 3–4 MB），文档越多文件越大。
+- Markdown / JSON 正文默认全部嵌入；程序化 API 可显式设置 `maxRawKB`，让超限文件只保留目录项。
+- Markdown 引用的本地图片和附件不会嵌入 HTML；移动产物时需保留相同的相对目录结构。
 - 构建失败时退出码为 1，并输出可读错误信息。
 
 ## 许可

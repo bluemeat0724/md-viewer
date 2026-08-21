@@ -1,13 +1,13 @@
 /**
- * dsh-md-viewer 引擎：进程内复用 @bluemeat0724/md-viewer 的渲染管线
- * （marked + highlight.js + mermaid → 自包含 md-viewer.html）。
+ * dsh-md-viewer 引擎：进程内复用 @bluemeat0724/md-viewer 的构建管线
+ * （md/json 原始文本 → 自包含 md-viewer.html，浏览器端按需渲染）。
  *
  * 与 CLI 不同，这里不 spawn 子进程：直接调用包的程序化 API
- * （build / findMds），写入使用宿主进程权限——构建是用户在 GUI 主动触发的、
- * 只写所选目录下 <dir>/.agents/md-viewer.html 一个文件（安全模型见 README）。
+ * （build / findDocs），写入使用宿主进程权限——构建是用户在 GUI 主动触发的、
+ * 只写所选目录下 <dir>/.agents/md-viewer/ 一个自包含 HTML（安全模型见 README）。
  */
-import { build as buildHtml, findMds } from '@bluemeat0724/md-viewer'
-import { readFile } from 'node:fs/promises'
+import { build as buildHtml, findDocs } from '@bluemeat0724/md-viewer'
+import { readFile, rm } from 'node:fs/promises'
 import { basename, dirname, join } from 'node:path'
 import { createRequire } from 'node:module'
 
@@ -32,10 +32,10 @@ export class MdViewerEngine {
     }
   }
 
-  /** 递归统计目录下 md 文件（引擎同款跳过规则：隐藏项 + 依赖/产物目录）。 */
+  /** 递归统计目录下 md/json 文件（引擎同款跳过规则：隐藏项 + 依赖/产物目录）。 */
   async scan(dir: string): Promise<ScanResult> {
     try {
-      const rels = await findMds(dir)
+      const rels = await findDocs(dir)
       return { dir, count: rels.length, sample: rels.slice(0, 100) }
     } catch (error) {
       return { dir, count: 0, sample: [], error: String((error as Error)?.message ?? error) }
@@ -44,21 +44,25 @@ export class MdViewerEngine {
 
   /** 构建并缓存快照。写入失败/目录不存在时抛错（由路由层转 JSON 错误）。 */
   async build(dir: string): Promise<SnapshotMeta> {
-    const outFile = join(dir, '.agents', 'md-viewer.html')
+    const outFile = join(dir, '.agents', 'md-viewer', 'index.html')
     const title = basename(dir) || dir
     await buildHtml({ srcDir: dir, outFile, title })
     const html = await readFile(outFile, 'utf8')
-    const rels = await findMds(dir)
+    const rels = await findDocs(dir)
+    const jsonCount = rels.filter((rel) => rel.toLowerCase().endsWith('.json')).length
     const meta: SnapshotMeta = {
       dir,
       outFile,
       url: '/mdv/' + encodeURIComponent(dir),
-      fileCount: rels.length,
+      fileCount: rels.length - jsonCount,
+      jsonCount,
       generatedAt: new Date().toLocaleString('zh-CN', { hour12: false }),
       sizeMB: Number((Buffer.byteLength(html, 'utf8') / 1048576).toFixed(2)),
       title,
     }
     this.snapshots.set(dir, { ...meta, html })
+    // 0.6.x 产物是单文件 .agents/md-viewer.html，迁移后顺手清理避免新旧并存
+    await rm(join(dir, '.agents', 'md-viewer.html'), { force: true }).catch(() => undefined)
     return meta
   }
 

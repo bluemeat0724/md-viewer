@@ -1,7 +1,7 @@
 {
   "name": "@bluemeat0724/md-viewer",
-  "version": "0.6.2",
-  "description": "Scan a directory of Markdown files and build a self-contained, offline md-viewer.html",
+  "version": "0.7.0",
+  "description": "Scan a directory of Markdown/JSON files and build a self-contained, offline md-viewer.html",
   "type": "module",
   "bin": {
     "md-viewer": "bin/md-viewer.mjs"
@@ -21,7 +21,7 @@
     "lib"
   ],
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "keywords": [
     "markdown",
@@ -38,6 +38,6 @@
     "esbuild": "^0.28.2"
   },
   "scripts": {
-    "test": "node --test"
+    "test": "node test/core.test.mjs && node test/build.test.mjs"
   }
 }

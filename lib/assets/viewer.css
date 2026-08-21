@@ -166,6 +166,18 @@ button.toc-group-title:hover{color:var(--fg); background:var(--surface-2)}
 .toc-item.active .toc-path{color:var(--accent-strong)}
 .toc-title{display:block; font-weight:500; line-height:1.45}
 .toc-path{display:block; font-size:var(--fs-2xs); color:var(--muted); line-height:1.45; word-break:break-all}
+/* JSON 文件徽标（开启可见性后目录中出现） */
+.toc-badge{
+  display:inline-block; vertical-align:1px; margin-left:5px; padding:0 5px;
+  font-size:10px; font-weight:600; letter-spacing:.04em; line-height:16px;
+  color:var(--accent-strong); border:1px solid light-dark(rgba(44,99,216,.35),rgba(125,162,245,.4));
+  border-radius:4px; background:var(--accent-soft);
+}
+/* 超限未嵌入的条目：保留在目录中但整体弱化 */
+.toc-item.is-omitted .toc-title,
+.toc-item.is-omitted .toc-path{color:var(--muted); opacity:.65}
+/* 目录被过滤到空（如仅含 JSON 且未开启显示）时的引导文案 */
+.toc-empty{padding:18px 12px; font-size:var(--fs-xs); color:var(--muted); line-height:1.8}
 .side-foot{
   padding:10px 16px; border-top:1px solid var(--border); font-size:var(--fs-2xs); color:var(--muted); line-height:1.7; white-space:pre-line;
 }
@@ -210,10 +222,19 @@ button.toc-group-title:hover{color:var(--fg); background:var(--surface-2)}
 /* 本页目录按钮：仅窄屏（<1280px，右侧 outline 不可见时）出现 */
 #btn-outline{display:inline-flex}
 @media (min-width:1280px){ #btn-outline{display:none} }
+/* JSON 可见性开关：开启态用强调色点亮（仿 .toc-item.active 语义） */
+#btn-json.on{color:var(--accent-strong); background:var(--accent-soft)}
+#btn-json.on:hover{color:var(--accent-strong); background:var(--accent-soft)}
 
 /* ---------------- 阅读区与右侧大纲 ---------------- */
 #content-wrap{display:grid; grid-template-columns:minmax(0,1fr); flex:1; position:relative}
 #outline{display:none}
+/* JSON 文档无标题结构：隐藏本页目录（右栏 + 窄屏弹层入口），正文独占全宽 */
+body.no-outline #outline{display:none !important}
+body.no-outline #btn-outline{display:none !important}
+@media (min-width:1280px){
+  body.no-outline #content-wrap{grid-template-columns:minmax(0,1fr)}
+}
 @media (min-width:1280px){
   #content-wrap{grid-template-columns:minmax(0,1fr) var(--outline-w)}
   #outline{
@@ -397,6 +418,44 @@ article.doc{display:block; padding:26px 0 72px}
 }
 .doc-meta a{color:var(--muted); text-decoration:underline; text-underline-offset:3px}
 
+/* ---------------- JSON 文档视图（0.7.0：pretty + 行内折叠） ---------------- */
+/* 超限未嵌入 / 解析失败的占位提示 */
+.doc-notice{
+  display:flex; gap:9px; align-items:flex-start;
+  margin:1em 0; padding:13px 16px;
+  border:1px solid var(--border); border-left:3px solid var(--danger); border-radius:var(--r-m);
+  background:var(--surface); color:var(--fg); font-size:var(--fs-s);
+}
+.doc-notice .icon{width:15px; height:15px; color:var(--danger); margin-top:4px}
+/* 工具行：展开层级输入 + 操作提示 */
+.json-bar{display:flex; align-items:center; gap:12px; margin:0 0 12px; font-size:var(--fs-xs); color:var(--muted)}
+.json-expand{display:inline-flex; align-items:center; gap:6px}
+#jf-expand{
+  width:60px; height:26px; padding:0 8px;
+  border:1px solid var(--border); border-radius:var(--r-s);
+  background:var(--bg); color:var(--fg); font-size:var(--fs-xs); font-family:var(--mono);
+}
+#jf-expand:focus{border-color:var(--accent); outline:none; box-shadow:var(--focus-ring)}
+.json-bar-tip{font-size:var(--fs-2xs)}
+/* pretty JSON：类型着色沿用 hljs 令牌色 */
+.json-view .jt-key{color:var(--hl-attr)}
+.jt-val.jt-string{color:var(--hl-string)}
+.jt-val.jt-number{color:var(--hl-number)}
+.jt-val.jt-boolean{color:var(--hl-literal)}
+.jt-val.jt-null{color:var(--hl-comment)}
+.jt-val.jt-object,.jt-val.jt-array{color:var(--muted)}
+/* 行内折叠：括号即开关；⋯ 标记用伪元素渲染（不进复制文本） */
+.json-view .jf-punc{color:var(--muted)}
+.json-view .jf-brace{color:var(--fg); cursor:pointer; border-radius:3px}
+.json-view .jf-brace:hover{background:var(--accent-soft); color:var(--accent-strong)}
+.json-view .jf-mark{
+  display:inline-block; margin:0 4px; padding:0 7px; line-height:18px; vertical-align:1px;
+  cursor:pointer; font-size:var(--fs-2xs); color:var(--muted);
+  border:1px dashed var(--border-strong); border-radius:var(--r-s);
+}
+.json-view .jf-mark::before{content:"⋯ " attr(data-label)}
+.json-view .jf-mark:hover{color:var(--accent-strong); border-color:var(--accent)}
+
 /* ---------------- hljs 配色（双主题变量） ---------------- */
 .hljs-keyword,.hljs-selector-tag,.hljs-doctag,.hljs-strong,.hljs-name{color:var(--hl-keyword); font-weight:600}
 .hljs-string,.hljs-regexp,.hljs-addition,.hljs-selector-pseudo,.hljs-selector-attr{color:var(--hl-string)}
@@ -444,7 +503,10 @@ article.doc{display:block; padding:26px 0 72px}
 @media print{
   /* 打印固定浅色渲染，避免深色主题整页铺色 */
   :root{color-scheme:light}
-  #sidebar,#outline,#outline-pop,.toolbar,#scrim,.code-copy,.h-anchor,.mmd-zoom-bar{display:none !important}
+  #sidebar,#outline,#outline-pop,.toolbar,#scrim,.code-copy,.h-anchor,.mmd-zoom-bar,.json-bar{display:none !important}
+  /* JSON 折叠：打印时展开全部（hidden 的 body 强制显示，标记藏起） */
+  .json-view .jf-body[hidden]{display:inline}
+  .json-view .jf-mark{display:none !important}
   #app{display:block}
   #content-wrap{display:block}
   #docs{max-width:none; padding:0}

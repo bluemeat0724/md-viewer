@@ -1,5 +1,20 @@
 # Change Log
 
+## 0.7.0（2026-08-21）
+
+### 新增
+
+- 扫描与展示 JSON 文件；目录默认隐藏 JSON，可通过工具栏切换，正文支持格式化与分层折叠。
+- 快照改为嵌入原始 Markdown/JSON，打开文档时在浏览器按需渲染；marked、highlight.js 与 Mermaid 仍随 HTML 离线内嵌。
+- 程序化 API 新增 `findDocs`，`findMds` 保留为兼容别名。
+
+### 优化与修复
+
+- Markdown/JSON 正文默认全部嵌入，只有显式设置 `maxRawKB` 时才省略超限文件。
+- 动态 HTML 属性使用独立编码，特殊文件名与跨文档锚点不再破坏页面结构。
+- 根测试入口限定为 node:test 文件，不再误加载插件 Vitest 用例；最低 Node 版本与 marked 对齐为 20。
+- `--harness` 产物迁移到 `.agents/md-viewer/index.html`。
+
 ## 0.6.2（2026-08-21）
 
 ### 修复

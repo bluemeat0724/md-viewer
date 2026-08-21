@@ -15,11 +15,11 @@ function text(value: string): ContentBlock[] {
 /** 默认目录解析：会话工作区（无则返回 null，由 execute 报错）。 */
 export type DefaultDir = () => string | null
 
-/** 构建工具：mdv_build [dir] —— 用 md-viewer 渲染指定目录的 Markdown。 */
+/** 构建工具：mdv_build [dir] —— 用 md-viewer 渲染指定目录的 md/json。 */
 export function mdvBuildTool(engine: MdViewerEngine, defaultDir: DefaultDir) {
   return defineTool({
     name: 'mdv_build',
-    description: '使用 md-viewer 项目能力，把指定目录下的所有 Markdown 文档渲染成自包含的 md-viewer.html 快照（marked + highlight.js + mermaid，GFM/代码高亮/图表全支持），构建后可在 DeepSeek Harness 界面的「MD 文档」查看器中浏览。目录缺省时使用当前会话工作区。',
+    description: '使用 md-viewer 项目能力，把指定目录下的所有 Markdown 与 JSON 文件构建成自包含的 md-viewer.html 快照（浏览器端按需渲染：marked + highlight.js + mermaid，GFM/代码高亮/图表全支持；JSON 以 pretty 文本展示并支持行内展开/折叠，默认 3 层可配置），构建后可在 DeepSeek Harness 界面的「MD 文档」查看器中浏览。目录缺省时使用当前会话工作区。',
     parameters: {
       dir: { type: 'string', description: '要扫描的目录绝对路径（缺省：当前会话工作区）' },
     },
@@ -33,6 +33,7 @@ export function mdvBuildTool(engine: MdViewerEngine, defaultDir: DefaultDir) {
           outFile: { type: 'string' },
           url: { type: 'string' },
           fileCount: { type: 'integer' },
+          jsonCount: { type: 'integer' },
           generatedAt: { type: 'string' },
           sizeMB: { type: 'number' },
           error: { type: 'string' },
@@ -41,8 +42,8 @@ export function mdvBuildTool(engine: MdViewerEngine, defaultDir: DefaultDir) {
       render: (_args, value: BuildResult) => {
         if (value.ok) {
           return text(
-            'md-viewer rendered Markdown snapshot\n' +
-              `dir: ${value.dir}\nfileCount: ${value.fileCount}\nsize: ${value.sizeMB} MB\n` +
+            'md-viewer rendered docs snapshot\n' +
+              `dir: ${value.dir}\nfileCount: ${value.fileCount} md + ${value.jsonCount} json\nsize: ${value.sizeMB} MB\n` +
               `generatedAt: ${value.generatedAt}\noutput: ${value.outFile}\nbrowse: ${value.url}\n` +
               'Open the "MD Docs" entry in the Harness GUI to browse the rendered result.',
           )
@@ -89,6 +90,7 @@ export function mdvStatusTool(engine: MdViewerEngine) {
                 outFile: { type: 'string', required: true },
                 url: { type: 'string', required: true },
                 fileCount: { type: 'integer', required: true },
+                jsonCount: { type: 'integer' },
                 generatedAt: { type: 'string', required: true },
                 sizeMB: { type: 'number', required: true },
                 title: { type: 'string', required: true },

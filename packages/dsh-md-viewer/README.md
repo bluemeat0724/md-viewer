@@ -2,9 +2,9 @@
 
 English | [中文](README.zh.md)
 
-Browse any workspace's Markdown inside the DeepSeek Harness web GUI, rendered
+Browse any workspace's Markdown and JSON inside the DeepSeek Harness web GUI, rendered
 by the **md-viewer engine** (marked + highlight.js + mermaid into a
-self-contained offline snapshot). The host half reuses the
+  self-contained offline snapshot). The host half reuses the
 `@bluemeat0724/md-viewer` programmatic API in-process — no shell spawning, no
 external service.
 
@@ -14,8 +14,8 @@ in the same repository (`packages/dsh-md-viewer`).
 ## Capabilities
 
 - One-click snapshot build: pick a workspace (or type any directory path) and
-  click "Build & preview"; the host renders every `*.md` (GFM, code highlight,
-  Mermaid) into `<dir>/.agents/md-viewer.html` and caches it in memory.
+  click "Build & preview"; the host renders every `*.md` / `*.json` into
+  `<dir>/.agents/md-viewer/index.html` and caches it in memory.
 - Embedded preview: a full-screen overlay shows the result in an iframe
   (`/mdv/<dir>` route) — file tree, full-text search, Mermaid zoom, theme
   toggle, plus open-in-new-tab.
@@ -26,7 +26,7 @@ in the same repository (`packages/dsh-md-viewer`).
 ## Security model
 
 - Builds are user-driven (GUI click) or explicitly invoked by the agent
-  (`mdv_build`); the host writes exactly one file, `<dir>/.agents/md-viewer.html`,
+  (`mdv_build`); the host writes exactly one file, `<dir>/.agents/md-viewer/index.html`,
   with host-process permissions.
 - All `/api/mdv/*` and `/mdv/*` routes carry a loopback-only trust fence.
 - Snapshots live in host memory only.

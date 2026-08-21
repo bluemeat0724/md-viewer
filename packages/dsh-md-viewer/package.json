@@ -1,7 +1,7 @@
 {
   "name": "@bluemeat0724/dsh-md-viewer",
   "description": "Markdown workspace viewer plugin for the DeepSeek Harness web GUI: renders any workspace's Markdown with the md-viewer engine (marked + highlight.js + mermaid into a self-contained offline snapshot) and browses the result in an embedded overlay; agent tools mdv_build / mdv_status. Standalone dsh plugin (dsh.bundle.patch + dsh.client), hot-pluggable via the web profile.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "packageManager": "pnpm@11.7.0",
   "engines": {
@@ -47,7 +47,7 @@
     "react": "^18.2.0"
   },
   "dependencies": {
-    "@bluemeat0724/md-viewer": "^0.6.2"
+    "@bluemeat0724/md-viewer": "^0.7.0"
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "^4.0.1",

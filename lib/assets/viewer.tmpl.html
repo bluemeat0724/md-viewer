@@ -17,7 +17,7 @@
      字形原样内嵌以保证产物离线自包含；描边样式统一由 CSS 的 .icon 控制。
      清单：menu / x / search / circle-x / sun / moon / theme-auto / printer /
      arrow-left / arrow-right / chevron-right / copy / check / plus / minus /
-     restore / maximize / minimize / alert / list / book -->
+     restore / maximize / minimize / alert / list / book / braces -->
 <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
   <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6l16 0"/><path d="M4 12l16 0"/><path d="M4 18l16 0"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6l-12 12"/><path d="M6 6l12 12"/></symbol>
@@ -40,6 +40,7 @@
   <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0"/><path d="M12 16h.01"/></symbol>
   <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11"/><path d="M12 12h8"/><path d="M15 18h5"/><path d="M5 6v.01"/><path d="M8 12v.01"/><path d="M11 18v.01"/></symbol>
   <symbol id="i-book" viewBox="0 0 24 24"><path d="M19 4v16h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12"/><path d="M19 16h-12a2 2 0 0 0 -2 2"/><path d="M9 8h6"/></symbol>
+  <symbol id="i-braces" viewBox="0 0 24 24"><path d="M7 4a2 2 0 0 0 -2 2v3a2 3 0 0 1 -2 3a2 3 0 0 1 2 3v3a2 2 0 0 0 2 2"/><path d="M17 4a2 2 0 0 1 2 2v3a2 3 0 0 0 2 3a2 3 0 0 0 -2 3v3a2 2 0 0 1 -2 2"/></symbol>
 </svg>
 <div id="app">
   <aside id="sidebar">
@@ -67,6 +68,7 @@
       <div class="toolbar-actions">
         <button class="tbtn" id="btn-prev" title="上一篇 ( [ )"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-arrow-left"/></svg><span class="lbl">上一篇</span></button>
         <button class="tbtn" id="btn-next" title="下一篇 ( ] )"><span class="lbl">下一篇</span><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-arrow-right"/></svg></button>
+        <button class="tbtn ibtn" id="btn-json" title="显示 / 隐藏 JSON 文件" aria-label="显示 / 隐藏 JSON 文件" aria-pressed="false"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-braces"/></svg></button>
         <button class="tbtn ibtn" id="btn-theme" title="主题：浅色 / 深色 / 自动" aria-label="切换主题"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-sun"/></svg></button>
         <button class="tbtn ibtn" id="btn-outline" title="本页目录" aria-label="本页目录" aria-expanded="false"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-list"/></svg></button>
         <button class="tbtn ibtn" id="btn-print" title="打印当前文档" aria-label="打印当前文档"><svg class="icon" aria-hidden="true" focusable="false"><use href="#i-printer"/></svg></button>
@@ -87,15 +89,11 @@
     </div>
   </main>
 </div>
-<script>
-%%MARKED_BUNDLE%%
-</script>
-<script>
-%%HLJS_BUNDLE%%
-</script>
-<script>
-%%MERMAID_BUNDLE%%
-</script>
+<!-- 快照数据：JSON.parse 读取（比 JS 字面量省解析开销）；< 已在构建期转义 -->
+<script type="application/json" id="mdv-data">%%DOCS_JSON%%</script>
+%%MARKED_SCRIPT%%
+%%HLJS_SCRIPT%%
+%%MERMAID_SCRIPT%%
 <script>
 %%APP_JS%%
 </script>

@@ -7,12 +7,14 @@
 export interface SnapshotMeta {
   /** 被扫描目录（绝对路径，同时是快照的键）。 */
   dir: string
-  /** 输出文件路径（<dir>/.agents/md-viewer.html）。 */
+  /** 输出文件路径（<dir>/.agents/md-viewer/index.html）。 */
   outFile: string
   /** iframe/新标签浏览地址（相对路径）。 */
   url: string
-  /** 文档数。 */
+  /** 文档数（Markdown 篇数）。 */
   fileCount: number
+  /** JSON 文件数（目录默认隐藏，浏览器内花括号按钮切换显示）。 */
+  jsonCount: number
   /** 生成时间（zh-CN 本地化字符串）。 */
   generatedAt: string
   /** 产物大小（MB，两位小数）。 */
@@ -39,6 +41,7 @@ export interface ScanRequest {
 }
 export interface ScanResult {
   dir: string
+  /** md + json 文件总数。 */
   count: number
   sample: string[]
   error?: string

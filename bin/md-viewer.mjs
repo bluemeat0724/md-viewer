@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 /**
- * md-viewer — 扫描目录下所有 *.md，构建自包含的离线 md-viewer.html。
+ * md-viewer — 扫描目录下所有 *.md / *.json，构建自包含的离线 md-viewer.html。
  * 薄入口：解析参数 → 调 lib/index.mjs（公共 API）。
  */
 import path from 'node:path';
+import fs from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { createRequire } from 'node:module';
 import { build, startWatch } from '../lib/index.mjs';
@@ -11,7 +12,7 @@ import { build, startWatch } from '../lib/index.mjs';
 const require = createRequire(import.meta.url);
 const pkg = require('../package.json');
 
-const HELP = `md-viewer v${pkg.version} — 扫描目录下所有 *.md，构建自包含的离线 md-viewer.html
+const HELP = `md-viewer v${pkg.version} — 扫描目录下所有 *.md / *.json，构建自包含的离线 md-viewer.html
 
 用法：
   md-viewer [目录] [选项]
@@ -20,9 +21,9 @@ const HELP = `md-viewer v${pkg.version} — 扫描目录下所有 *.md，构建�
   [目录]              扫描根目录（默认：当前执行目录）
 
 选项：
-  -w, --watch         构建后持续监听，md 变动自动重建
+  -w, --watch         构建后持续监听，md / json 变动自动重建
   -o, --open          构建后用系统默认浏览器打开生成的 HTML
-      --harness       输出到 <目录>/.agents/md-viewer.html 并开启 watch（供 Agent 环境常驻）
+      --harness       输出到 <目录>/.agents/md-viewer/index.html 并开启 watch（供 Agent 环境常驻）
       --out <file>    输出文件路径（默认：<目录>/md-viewer.html）
       --title <text>  站点标题（默认：扫描目录名）
   -h, --help          显示帮助
@@ -77,11 +78,12 @@ if (opts.version) { console.log(pkg.version); process.exit(0); }
 
 // CLI 语义：默认扫描执行目录（非脚本所在目录）
 const SRC_DIR = path.resolve(opts.dir || process.cwd());
-// --harness：产物改到扫描目录下 .agents/，并强制开启 watch（供 Agent 环境常驻）
+// --harness：产物改到扫描目录下 .agents/md-viewer/（数据目录约定的落点），
+// 并强制开启 watch（供 Agent 环境常驻）
 if (opts.harness) opts.watch = true;
 // 优先级：CLI --out > --harness 默认值 > 环境变量 > 默认值
 const OUT_FILE = path.resolve(opts.out
-  || (opts.harness ? path.join(SRC_DIR, '.agents', 'md-viewer.html') : null)
+  || (opts.harness ? path.join(SRC_DIR, '.agents', 'md-viewer', 'index.html') : null)
   || process.env.MD_VIEWER_OUT || path.join(SRC_DIR, 'md-viewer.html'));
 // 默认标题取扫描目录名（如 lenovo_repo），避免写死的 "md-viewer 文档" 与内容无关；
 // 仍可用 --title / MD_VIEWER_TITLE 覆盖
@@ -94,6 +96,12 @@ try {
 } catch (e) {
   console.error('构建失败:', e.message);
   process.exit(1);
+}
+
+// 0.6.x 的 --harness 产物是单文件 .agents/md-viewer.html，迁移后顺手清理残留
+if (opts.harness) {
+  const legacy = path.join(SRC_DIR, '.agents', 'md-viewer.html');
+  await fs.rm(legacy, { force: true }).catch(() => {});
 }
 
 if (opts.open) openInBrowser(OUT_FILE);
